@@ -11,7 +11,8 @@ const config = {
     scene: [TitleScene],
     scale: {
         autoCenter: Phaser.Scale.CENTER_BOTH  
-    }
+    },
+    debug: true
 };
 
 const game = new Phaser.Game(config);

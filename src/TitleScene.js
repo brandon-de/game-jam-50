@@ -9,11 +9,13 @@ class TitleScene extends Phaser.Scene {
     preload ()
     {
         this.load.image('title', TitleImg);
+        this.load.bitmapFont('nes', 'src/assets/press-start-2p.png', 'src/assets/press-start-2p.xml');
     }
       
     create ()
     {
-        const logo = this.add.image(128, 120, 'title');
+        this.add.image(128, 120, 'title');
+        this.add.bitmapText(80, 150, "nes", "PRESS START", 8);
     }
 }
 
