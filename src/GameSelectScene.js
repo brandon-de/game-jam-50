@@ -4,6 +4,8 @@ import GameFrameSheetData from './assets/ufo50-game-jam-game-frame.json';
 import PressStart2pImg from './assets/press-start-2p.png';
 import PressStart2pXml from './assets/press-start-2p.xml';
 import DinoRunGameFrameImg from './assets/dino-run-game-frame.png';
+import PaginatorImg from './assets/ufo50-game-jam-paginator.png';
+import PaginatorData from './assets/ufo50-game-jam-paginator.json';
 
 export default class GameSelectScene extends Phaser.Scene {
 
@@ -14,7 +16,8 @@ export default class GameSelectScene extends Phaser.Scene {
 
     preload ()
     {        
-        this.load.aseprite('gameFrame',GameFrameSheetImg, GameFrameSheetData);
+        this.load.aseprite('gameFrame', GameFrameSheetImg, GameFrameSheetData);
+        this.load.aseprite('paginator', PaginatorImg, PaginatorData);
         this.load.bitmapFont('PressStart2p', PressStart2pImg, PressStart2pXml);
         this.load.image('dinoRunGameFrame', DinoRunGameFrameImg);        
         this.games = [{},{},{text: "DINO RUN", image: 'dinoRunGameFrame'},{},{},{},{},{},{}]; // TODO: Load this from JSON
@@ -59,5 +62,30 @@ export default class GameSelectScene extends Phaser.Scene {
 
             this.gameFrames.push(gameFrame);
         }
+
+        for (let i = 0; i < 3; i++) 
+        {
+            var paginator = this.add.sprite(117 + (i * 10), 230, 'paginator').setInteractive();
+
+            paginator.on('pointerover', function(_pointer) {
+                _pointer.manager.game.input.setDefaultCursor('pointer');
+                this.setFrame('1');
+            });
+            paginator.on('pointerout', function(_pointer) {
+                _pointer.manager.game.input.setDefaultCursor('context-menu');
+
+                if(!this.currentPage)
+                {
+                    this.setFrame('0');
+                }
+            });            
+
+            if(i == 0)
+            {
+                paginator.setFrame(1);
+                paginator.currentPage = true;
+            }
+        }
+        
     }
 }

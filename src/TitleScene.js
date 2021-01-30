@@ -18,7 +18,7 @@ export default class TitleScene extends Phaser.Scene {
     create ()
     {
         this.add.image(128, 120, 'title');
-        this.pressStartText = this.add.bitmapText(80, 150, "PressStart2p", "PRESS START", 8);
+        this.pressStartText = this.add.bitmapText(80, 150, "PressStart2p", "PRESS ENTER", 8);
         this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
         this.isTriggerSceneTransition = false;
     }
