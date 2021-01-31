@@ -6,6 +6,8 @@ import PressStart2pXml from './assets/press-start-2p.xml';
 import DinoRunGameFrameImg from './assets/dino-run-game-frame.png';
 import PaginatorImg from './assets/ufo50-game-jam-paginator.png';
 import PaginatorData from './assets/ufo50-game-jam-paginator.json';
+import GameFrameHighlightSound from './assets/ufo50-game-jam-game-frame-highlight.wav';
+import PaginatorHighlightSound from './assets/ufo50-game-jam-paginator-highlight.wav';
 
 export default class GameSelectScene extends Phaser.Scene {
 
@@ -20,11 +22,16 @@ export default class GameSelectScene extends Phaser.Scene {
         this.load.aseprite('paginator', PaginatorImg, PaginatorData);
         this.load.bitmapFont('PressStart2p', PressStart2pImg, PressStart2pXml);
         this.load.image('dinoRunGameFrame', DinoRunGameFrameImg);        
+        this.load.audio('gameFrameHighlight', GameFrameHighlightSound);
+        this.load.audio('paginatorHighlight', PaginatorHighlightSound);
         this.games = [{},{},{text: "DINO RUN", image: 'dinoRunGameFrame'},{},{},{},{},{},{}]; // TODO: Load this from JSON
     }    
       
     create ()
     {
+        var gameFrameHighlightSound = this.sound.add('gameFrameHighlight');
+        var paginatorHighlightSound = this.sound.add('paginatorHighlight');
+
         var currentX = 44;
         var currentY = 38;
         for (var i = 0; i < 9; i++) 
@@ -54,6 +61,7 @@ export default class GameSelectScene extends Phaser.Scene {
             gameFrame.on('pointerover', function(_pointer) {
                 _pointer.manager.game.input.setDefaultCursor('pointer');
                 this.setFrame('1');
+                gameFrameHighlightSound.play();
             });
             gameFrame.on('pointerout', function(_pointer) {
                 _pointer.manager.game.input.setDefaultCursor('context-menu');
@@ -70,6 +78,7 @@ export default class GameSelectScene extends Phaser.Scene {
             paginator.on('pointerover', function(_pointer) {
                 _pointer.manager.game.input.setDefaultCursor('pointer');
                 this.setFrame('1');
+                paginatorHighlightSound.play();
             });
             paginator.on('pointerout', function(_pointer) {
                 _pointer.manager.game.input.setDefaultCursor('context-menu');

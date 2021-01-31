@@ -13,6 +13,9 @@ const config = {
     scale: {
         autoCenter: Phaser.Scale.CENTER_BOTH  
     },
+    audio: {
+        disableWebAudio: true
+    },
     debug: true
 };
 
