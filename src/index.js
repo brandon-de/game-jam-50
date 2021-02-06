@@ -1,10 +1,10 @@
 import Phaser from 'phaser';
-import GameSelectScene from './GameSelectScene';
-import TitleScene from './TitleScene';
+import GameSelectScene from './gameSelectScene';
+import TitleScene from './titleScene';
 
 const config = {
     type: Phaser.AUTO,
-    parent: 'ufo50-discord-game-jam',
+    parent: 'gamejam50',
     width: 256,
     height: 240,
     pixelArt: true,
