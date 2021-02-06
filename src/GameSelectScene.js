@@ -1,13 +1,13 @@
 import Phaser from 'phaser';
-import GameFrameSheetImg from './assets/ufo50-game-jam-game-frame.png';
-import GameFrameSheetData from './assets/ufo50-game-jam-game-frame.json';
+import GameFrameSheetImg from './assets/gamejam50-game-frame.png';
+import GameFrameSheetData from './assets/gamejam50-game-frame.json';
 import PressStart2pImg from './assets/press-start-2p.png';
 import PressStart2pXml from './assets/press-start-2p.xml';
 import DinoRunGameFrameImg from './assets/dino-run-game-frame.png';
-import PaginatorImg from './assets/ufo50-game-jam-paginator.png';
-import PaginatorData from './assets/ufo50-game-jam-paginator.json';
-import GameFrameHighlightSound from './assets/ufo50-game-jam-game-frame-highlight.wav';
-import PaginatorHighlightSound from './assets/ufo50-game-jam-paginator-highlight.wav';
+import PaginatorImg from './assets/gamejam50-paginator.png';
+import PaginatorData from './assets/gamejam50-paginator.json';
+import GameFrameHighlightSound from './assets/gamejam50-game-frame-highlight.wav';
+import PaginatorHighlightSound from './assets/gamejam50-paginator-highlight.wav';
 
 export default class GameSelectScene extends Phaser.Scene {
 

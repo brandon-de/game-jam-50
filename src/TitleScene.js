@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
-import TitleImg from './assets/ufo50-game-jam-title-screen.png';
+import TitleImg from './assets/gamejam50-title-screen.png';
 import PressStart2pImg from './assets/press-start-2p.png';
 import PressStart2pXml from './assets/press-start-2p.xml';
-import PressEnterSound from './assets/ufo50-game-jam-title-enter.wav';
+import PressEnterSound from './assets/gamejam50-title-enter.wav';
 
 export default class TitleScene extends Phaser.Scene {
 
