@@ -8,6 +8,8 @@ import PaginatorImg from './assets/gamejam50-paginator.png';
 import PaginatorData from './assets/gamejam50-paginator.json';
 import GameFrameHighlightSound from './assets/gamejam50-game-frame-highlight.wav';
 import PaginatorHighlightSound from './assets/gamejam50-paginator-highlight.wav';
+import MenuNegativeSound from './assets/gamejam50-negative-menu.wav';
+import GameSelectSound from './assets/gamejam50-game-select.wav';
 
 export default class GameSelectScene extends Phaser.Scene {
 
@@ -24,13 +26,17 @@ export default class GameSelectScene extends Phaser.Scene {
         this.load.image('dinoRunGameFrame', DinoRunGameFrameImg);        
         this.load.audio('gameFrameHighlight', GameFrameHighlightSound);
         this.load.audio('paginatorHighlight', PaginatorHighlightSound);
-        this.games = [{},{},{text: "DINO RUN", image: 'dinoRunGameFrame'},{},{},{},{},{},{}]; // TODO: Load this from JSON
+        this.load.audio('menuNegative', MenuNegativeSound);
+        this.load.audio('gameSelect', GameSelectSound);
+        this.games = [{},{},{text: 'DINO RUN', image: 'dinoRunGameFrame', scene: 'dinoRunScenePlaceHolder'},{},{},{},{},{},{}]; // TODO: Load this from JSON
     }    
       
     create ()
     {
         var gameFrameHighlightSound = this.sound.add('gameFrameHighlight');
         var paginatorHighlightSound = this.sound.add('paginatorHighlight');
+        var menuNegativeSound = this.sound.add('menuNegative');
+        var gameSelectSound = this.sound.add('gameSelect');
 
         var currentX = 44;
         var currentY = 38;
@@ -46,7 +52,9 @@ export default class GameSelectScene extends Phaser.Scene {
                 currentX += 82;
             }         
 
+            this.anims.createFromAseprite('gameFrame');
             var gameFrame = this.add.sprite(currentX, currentY, 'gameFrame').setInteractive();
+            gameFrame.scene = this.games[i].scene == undefined ? null : this.games[i].scene;
 
             if(this.games[i].text != undefined)
             {
@@ -56,7 +64,7 @@ export default class GameSelectScene extends Phaser.Scene {
             if(this.games[i].image != undefined)
             {
                 this.add.image(currentX, currentY, this.games[i].image);
-            }
+            }            
 
             gameFrame.on('pointerover', function(_pointer) {
                 _pointer.manager.game.input.setDefaultCursor('pointer');
@@ -66,6 +74,17 @@ export default class GameSelectScene extends Phaser.Scene {
             gameFrame.on('pointerout', function(_pointer) {
                 _pointer.manager.game.input.setDefaultCursor('context-menu');
                 this.setFrame('0');
+            });
+            gameFrame.on('pointerdown', function(_pointer) {
+                if(this.scene == undefined)
+                {
+                    menuNegativeSound.play();
+                }                
+                else
+                {
+                    gameSelectSound.play();
+                    this.play({key: 'flash', repeat: 6});
+                }
             });
 
             this.gameFrames.push(gameFrame);
@@ -87,7 +106,14 @@ export default class GameSelectScene extends Phaser.Scene {
                 {
                     this.setFrame('0');
                 }
-            });            
+            });
+            // TODO: Actually paginate and move camera instead of disabling buttons
+            paginator.on('pointerdown', function(_pointer) {
+                if(!this.currentPage)
+                {
+                    menuNegativeSound.play();
+                }
+            });
 
             if(i == 0)
             {
