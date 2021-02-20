@@ -28,7 +28,7 @@ export default class GameSelectScene extends Phaser.Scene {
         this.load.audio('menuNegative', MenuNegativeSound);
         this.load.audio('gameSelect', GameSelectSound);
         // TODO: Load this from JSON
-        this.games = [{}, {}, { text: 'DINO RUN', image: 'dinoRunGameFrame', scene: 'dinoRunScenePlaceHolder' }, {}, {}, {}, {}, {}, {}]; 
+        this.games = [{}, {}, { text: 'DINO RUN', image: 'dinoRunGameFrame', sceneName: 'PantheonGameScene' }, {}, {}, {}, {}, {}, {}]; 
     }
 
     create() {
@@ -37,7 +37,7 @@ export default class GameSelectScene extends Phaser.Scene {
         var menuNegativeSound = this.sound.add('menuNegative');
         var gameSelectSound = this.sound.add('gameSelect');
         this.anims.createFromAseprite('gameFrame');
-
+        
         var currentX = 44;
         var currentY = 38;
         for (var i = 0; i < 9; i++) {
@@ -50,7 +50,7 @@ export default class GameSelectScene extends Phaser.Scene {
             }
             
             var gameFrame = this.add.sprite(currentX, currentY, 'gameFrame').setInteractive();
-            gameFrame.scene = this.games[i].scene == undefined ? null : this.games[i].scene;
+            gameFrame.sceneName = this.games[i].sceneName == undefined ? null : this.games[i].sceneName;
 
             if (this.games[i].text != undefined) {
                 this.add.bitmapText(currentX - 30, currentY + 30, "PressStart2p", this.games[i].text, 8);
@@ -69,15 +69,8 @@ export default class GameSelectScene extends Phaser.Scene {
                 _pointer.manager.game.input.setDefaultCursor('context-menu');
                 this.setFrame('0');
             });
-            gameFrame.on('pointerdown', function (_pointer) {
-                if (this.scene == undefined) {
-                    menuNegativeSound.play();
-                }
-                else {
-                    gameSelectSound.play();
-                    this.play({ key: 'flash', repeat: 6 });
-                }
-            });
+            gameFrame.on('pointerdown', this.onGameFrameClick.bind(this, gameFrame, gameSelectSound, menuNegativeSound));
+            gameFrame.on(Phaser.Animations.Events.ANIMATION_COMPLETE, this.onGameFrameAnimComplete.bind(this, gameFrame));
 
             this.gameFrames.push(gameFrame);
         }
@@ -109,5 +102,19 @@ export default class GameSelectScene extends Phaser.Scene {
                 paginator.currentPage = true;
             }
         }
+    }
+
+    onGameFrameClick(gameFrame, gameSelectSound, menuNegativeSound, pointer){
+        if (gameFrame.sceneName == undefined) {
+            menuNegativeSound.play();
+        }
+        else {
+            gameSelectSound.play();
+            gameFrame.play({ key: 'flash', repeat: 6 });
+        }
+    }
+
+    onGameFrameAnimComplete(gameFrame){
+        this.scene.start(gameFrame.sceneName);
     }
 }

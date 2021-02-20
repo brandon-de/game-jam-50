@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
-import GameSelectScene from './gameSelectScene';
-import TitleScene from './titleScene';
-import PantheonGameScene from './pantheonGameScene';
+import GameSelectScene from './main/gameSelectScene';
+import TitleScene from './main/titleScene';
+import PantheonGameScene from './games/pantheon/pantheonGameScene';
 
 const config = {
     type: Phaser.AUTO,
@@ -9,6 +9,8 @@ const config = {
     width: 256,
     height: 240,
     pixelArt: true,
+    roundPixel: false,
+    antialias: false,
     zoom: 2,
     scene: [TitleScene, GameSelectScene, PantheonGameScene],
     scale: {

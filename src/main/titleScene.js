@@ -6,41 +6,35 @@ import PressEnterSound from './assets/gamejam50-title-enter.wav';
 
 export default class TitleScene extends Phaser.Scene {
 
-    constructor(){
+    constructor() {
         super('TitleScene');
     }
 
-    preload ()
-    {
+    preload() {
         this.load.image('title', TitleImg);
         this.load.bitmapFont('PressStart2p', PressStart2pImg, PressStart2pXml);
         this.load.audio('pressEnter', PressEnterSound);
-    }    
-      
-    create ()
-    {
+    }
+
+    create() {
         this.add.image(128, 120, 'title');
         this.pressStartText = this.add.bitmapText(80, 150, "PressStart2p", "PRESS ENTER", 8);
         this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
         this.isTriggerSceneTransition = false;
     }
 
-    update ()
-    {
-        if(this.enterKey.isDown && !this.isTriggerSceneTransition)
-        {
+    update() {
+        if (this.enterKey.isDown && !this.isTriggerSceneTransition) {
             this.isTriggerSceneTransition = true;
-            this.transitionTimer = this.time.addEvent({ delay: 200, callback: this.triggerSceneTransition, callbackScope: this, repeat: 5 });        
+            this.transitionTimer = this.time.addEvent({ delay: 200, callback: this.triggerSceneTransition, callbackScope: this, repeat: 5 });
             this.sound.play('pressEnter');
         }
     }
 
-    triggerSceneTransition ()
-    {
+    triggerSceneTransition() {
         this.pressStartText.visible ? this.pressStartText.setVisible(false) : this.pressStartText.setVisible(true);
 
-        if(this.transitionTimer.getRepeatCount() == 0)
-        {
+        if (this.transitionTimer.getRepeatCount() == 0) {
             this.scene.start('GameSelectScene');
         }
     }
