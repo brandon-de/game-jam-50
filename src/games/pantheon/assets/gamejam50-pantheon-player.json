@@ -97,6 +97,33 @@
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 32 },
     "sourceSize": { "w": 16, "h": 32 },
     "duration": 100
+   },
+   {
+    "filename": "11",
+    "frame": { "x": 176, "y": 0, "w": 16, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 32 },
+    "sourceSize": { "w": 16, "h": 32 },
+    "duration": 100
+   },
+   {
+    "filename": "12",
+    "frame": { "x": 192, "y": 0, "w": 16, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 32 },
+    "sourceSize": { "w": 16, "h": 32 },
+    "duration": 100
+   },
+   {
+    "filename": "13",
+    "frame": { "x": 208, "y": 0, "w": 16, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 32 },
+    "sourceSize": { "w": 16, "h": 32 },
+    "duration": 100
    }
  ],
  "meta": {
@@ -104,14 +131,15 @@
   "version": "1.2.25-x64",
   "image": "gamejam50-pantheon-player.png",
   "format": "RGBA8888",
-  "size": { "w": 176, "h": 32 },
+  "size": { "w": 224, "h": 32 },
   "scale": "1",
   "frameTags": [
    { "name": "walk", "from": 0, "to": 2, "direction": "forward" },
    { "name": "arrow-fire-stand", "from": 3, "to": 5, "direction": "forward" },
    { "name": "arrow-fire-crouch", "from": 6, "to": 8, "direction": "forward" },
    { "name": "idle", "from": 9, "to": 9, "direction": "forward" },
-   { "name": "crouch", "from": 10, "to": 10, "direction": "forward" }
+   { "name": "crouch", "from": 10, "to": 10, "direction": "forward" },
+   { "name": "arrow-fire-up", "from": 11, "to": 13, "direction": "forward" }
   ],
   "layers": [
    { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }

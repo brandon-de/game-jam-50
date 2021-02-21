@@ -10,6 +10,7 @@ import GameFrameHighlightSound from './assets/gamejam50-game-frame-highlight.wav
 import PaginatorHighlightSound from './assets/gamejam50-paginator-highlight.wav';
 import MenuNegativeSound from './assets/gamejam50-negative-menu.wav';
 import GameSelectSound from './assets/gamejam50-game-select.wav';
+import PantheonGameFrameImg from './assets/pantheon-game-frame.png';
 
 export default class GameSelectScene extends Phaser.Scene {
 
@@ -23,12 +24,13 @@ export default class GameSelectScene extends Phaser.Scene {
         this.load.aseprite('paginator', PaginatorImg, PaginatorData);
         this.load.bitmapFont('PressStart2p', PressStart2pImg, PressStart2pXml);
         this.load.image('dinoRunGameFrame', DinoRunGameFrameImg);
+        this.load.image('pantheonGameFrame', PantheonGameFrameImg);
         this.load.audio('gameFrameHighlight', GameFrameHighlightSound);
         this.load.audio('paginatorHighlight', PaginatorHighlightSound);
         this.load.audio('menuNegative', MenuNegativeSound);
         this.load.audio('gameSelect', GameSelectSound);
         // TODO: Load this from JSON
-        this.games = [{}, {}, { text: 'DINO RUN', image: 'dinoRunGameFrame', sceneName: 'PantheonGameScene' }, {}, {}, {}, {}, {}, {}]; 
+        this.games = [{}, {}, { text: 'PANTHEON', image: 'pantheonGameFrame', sceneName: 'PantheonGameScene' }, {}, {}, {}, {}, {}, {}]; 
     }
 
     create() {
