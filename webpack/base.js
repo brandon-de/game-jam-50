@@ -12,33 +12,33 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader"
-        }
+          loader: "babel-loader",
+        },
       },
       {
         test: [/\.vert$/, /\.frag$/],
-        use: "raw-loader"
+        use: "raw-loader",
       },
       {
         test: /\.(gif|png|jpe?g|svg|xml)$/i,
-        use: "file-loader"
+        use: "file-loader",
       },
       {
         test: /\.(ogg|mp3|wav|mpe?g)$/i,
-        use: 'file-loader'
-      }
-    ]
+        use: "file-loader",
+      },
+    ],
   },
   plugins: [
     new CleanWebpackPlugin({
-      root: path.resolve(__dirname, "../")
+      root: path.resolve(__dirname, "../"),
     }),
     new webpack.DefinePlugin({
       CANVAS_RENDERER: JSON.stringify(true),
-      WEBGL_RENDERER: JSON.stringify(true)
+      WEBGL_RENDERER: JSON.stringify(true),
     }),
     new HtmlWebpackPlugin({
-      template: "./index.html"
-    })
-  ]
+      template: "./index.html",
+    }),
+  ],
 };
