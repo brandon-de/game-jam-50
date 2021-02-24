@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import GameSelectScene from "./main/gameSelectScene";
 import TitleScene from "./main/titleScene";
 import PantheonGameScene from "./games/pantheon/pantheonGameScene";
+import PantheonTitleScene from "./games/pantheon/pantheonTitleScene";
 
 const config = {
   type: Phaser.AUTO,
@@ -12,7 +13,7 @@ const config = {
   roundPixel: false,
   antialias: false,
   zoom: 2.5,
-  scene: [TitleScene, GameSelectScene, PantheonGameScene],
+  scene: [TitleScene, GameSelectScene, PantheonTitleScene, PantheonGameScene],
   scale: {
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
