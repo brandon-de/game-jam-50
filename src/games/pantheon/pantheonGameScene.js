@@ -12,6 +12,7 @@ export default class PantheonGameScene extends Phaser.Scene {
       physics: {
         default: "arcade",
         arcade: {
+          debug: false,
           gravity: { y: 200 },
         },
       },
@@ -31,7 +32,7 @@ export default class PantheonGameScene extends Phaser.Scene {
     var platformLayer = map.createLayer("platforms", tileset, 0, 0);
 
     this.anims.createFromAseprite("player");
-    this.player = this.add.sprite(32, 32, "player");
+    this.player = this.add.sprite(128, 100, "player");
     this.cursors = this.input.keyboard.createCursorKeys();
     this.zkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
     this.xkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);
