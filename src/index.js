@@ -12,7 +12,7 @@ const config = {
   pixelArt: true,
   roundPixel: false,
   antialias: false,
-  zoom: 2.5,
+  zoom: 3,
   scene: [TitleScene, GameSelectScene, PantheonTitleScene, PantheonGameScene],
   scale: {
     autoCenter: Phaser.Scale.CENTER_BOTH,

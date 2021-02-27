@@ -4,6 +4,10 @@ import TileSetImage from "./assets/gamejam50-pantheon-tileset.png";
 import PlayerImage from "./assets/gamejam50-pantheon-player.png";
 import PlayerData from "./assets/gamejam50-pantheon-player.json";
 import ProjectileArrowImage from "./assets/gamejam50-pantheon-projectile-arrow.png";
+import PressStart2pImg from "./assets/press-start-2p.png";
+import PressStart2pXml from "./assets/press-start-2p.xml";
+import PlayerHealthBarImage from "./assets/pantheon-game-health-bar.png";
+import PlayerHealthBarData from "./assets/pantheon-game-health-bar.json";
 
 export default class PantheonGameScene extends Phaser.Scene {
   constructor() {
@@ -23,7 +27,13 @@ export default class PantheonGameScene extends Phaser.Scene {
     this.load.image("tiles", TileSetImage);
     this.load.tilemapTiledJSON("map", LevelData);
     this.load.aseprite("player", PlayerImage, PlayerData);
+    this.load.aseprite(
+      "playerHealthBar",
+      PlayerHealthBarImage,
+      PlayerHealthBarData
+    );
     this.load.image("projectileArrow", ProjectileArrowImage);
+    this.load.bitmapFont("PressStart2p", PressStart2pImg, PressStart2pXml);
   }
 
   create() {
@@ -35,7 +45,16 @@ export default class PantheonGameScene extends Phaser.Scene {
     this.player = this.add.sprite(128, 100, "player");
     this.cursors = this.input.keyboard.createCursorKeys();
     this.zkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
-    this.xkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);
+    this.xkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);    
+    this.score = { number: 0 };
+    this.score.textStatic = this.add.bitmapText(2, 12, "PressStart2p", "SCORE", 8);
+    this.score.textDynamic = this.add.bitmapText(44, 12, "PressStart2p", this.score.number.toString(), 8);
+    this.playerHealth = { current: 4, max: 4, bars: [] };
+    for (var index = 0; index < this.playerHealth.max; index++) {
+      this.playerHealth.bars.push(this.add.sprite(54 + (index * 5), 5, "playerHealthBar"));
+    }
+    this.playerHealth.text = this.add.bitmapText(2, 2, "PressStart2p", "PLAYER", 8);
+
 
     platformLayer.setCollision([1]);
     this.physics.add.existing(this.player);
