@@ -8,6 +8,9 @@ import PressStart2pImg from "./assets/press-start-2p.png";
 import PressStart2pXml from "./assets/press-start-2p.xml";
 import PlayerHealthBarImage from "./assets/pantheon-game-health-bar.png";
 import PlayerHealthBarData from "./assets/pantheon-game-health-bar.json";
+import SkeletonImage from "./assets/pantheon-game-skeleton.png";
+import SkeletonData from "./assets/pantheon-game-skeleton.json";
+import Skeleton from "./pantheonSkeleton";
 
 export default class PantheonGameScene extends Phaser.Scene {
   constructor() {
@@ -27,6 +30,7 @@ export default class PantheonGameScene extends Phaser.Scene {
     this.load.image("tiles", TileSetImage);
     this.load.tilemapTiledJSON("map", LevelData);
     this.load.aseprite("player", PlayerImage, PlayerData);
+    this.load.aseprite("skeleton", SkeletonImage, SkeletonData);
     this.load.aseprite(
       "playerHealthBar",
       PlayerHealthBarImage,
@@ -39,9 +43,10 @@ export default class PantheonGameScene extends Phaser.Scene {
   create() {
     var map = this.make.tilemap({ key: "map" });
     var tileset = map.addTilesetImage("gamejam50-pantheon-tileset", "tiles");
-    var platformLayer = map.createLayer("platforms", tileset, 0, 0);
+    this.platformLayer = map.createLayer("platforms", tileset, 0, 0);
 
     this.anims.createFromAseprite("player");
+    this.anims.createFromAseprite("skeleton");
     this.player = this.add.sprite(128, 100, "player");
     this.cursors = this.input.keyboard.createCursorKeys();
     this.zkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
@@ -56,23 +61,31 @@ export default class PantheonGameScene extends Phaser.Scene {
     this.playerHealth.text = this.add.bitmapText(2, 2, "PressStart2p", "PLAYER", 8);
 
 
-    platformLayer.setCollision([1]);
-    this.physics.add.existing(this.player);
-    this.physics.add.collider(this.player, platformLayer);
+    this.platformLayer.setCollision([1]);
+    this.physics.add.existing(this.player);    
 
     this.projectileArrows = this.physics.add.group({
       defaultKey: "projectileArrow",
-      maxSize: 20,
+      frameQuantity: 20,
       allowGravity: false,
+      runChildUpdate: true,
+      active: false,
+      visible: false
     });
 
     this.player.on(
       Phaser.Animations.Events.ANIMATION_COMPLETE,
       this.onPlayerAnimComplete.bind(this)
     );
+
+    this.skeleton = new Skeleton(this, 0, 150);
+
+    this.physics.add.collider(this.player, this.platformLayer);
+    this.physics.add.collider(this.skeleton, this.platformLayer);
+    this.physics.add.overlap(this.projectileArrows, this.skeleton, this.onArrowOverlap);
   }
 
-  update() {
+  update(time, delta) {
     if (this.zkey.isDown && !this.cursors.down.isDown) {
       this.player.body.setVelocityX(0);
 
@@ -121,19 +134,21 @@ export default class PantheonGameScene extends Phaser.Scene {
           (Math.abs(arrow.startX - arrow.x) ||
             Math.abs(arrow.startY - arrow.y)) > 55
         ) {
-          arrow.setActive(false);
-          arrow.setVisible(false);
+          this.projectileArrows.killAndHide(arrow);
+          arrow.body.enable = false;
         }
       }.bind(this)
     );
+
+    this.skeleton.update(time, delta);
   }
 
   onPlayerAnimComplete() {
     var velocity = 250;
 
     if (
-      this.player.anims.currentAnim.key == "arrow-fire-crouch" ||
-      this.player.anims.currentAnim.key == "arrow-fire-stand"
+      (this.player.anims.currentAnim.key == "arrow-fire-crouch" ||
+      this.player.anims.currentAnim.key == "arrow-fire-stand") && this.zkey.isDown
     ) {
       var xPosBuffer = 3;
       var yPosBuffer = 6;
@@ -147,10 +162,11 @@ export default class PantheonGameScene extends Phaser.Scene {
         yPosBuffer = -1;
       }
 
-      var arrow = this.projectileArrows.get(
+      var arrow = this.projectileArrows.getFirstDead(true,
         this.player.x + xPosBuffer,
         this.player.y + yPosBuffer
       );
+
       if (arrow) {
         arrow.angle = 0.0;
         arrow.flipX = this.player.flipX;
@@ -160,6 +176,7 @@ export default class PantheonGameScene extends Phaser.Scene {
         arrow.startY = arrow.y;
         arrow.body.setVelocityX(velocity);
         arrow.body.setVelocityY(0);
+        arrow.body.enable = true;
       }
     } else if (this.player.anims.currentAnim.key == "arrow-fire-up") {
       var arrow = this.projectileArrows.get(this.player.x, this.player.y + -2);
@@ -172,7 +189,15 @@ export default class PantheonGameScene extends Phaser.Scene {
         arrow.startY = arrow.y;
         arrow.body.setVelocityY(velocity * -1);
         arrow.body.setVelocityX(0);
+        arrow.body.enable = true;
       }
     }
+  }
+
+  onArrowOverlap(enemy, arrow){
+    arrow.setActive(false);
+    arrow.setVisible(false);
+    arrow.body.enable = false;
+    enemy.hit();
   }
 }
