@@ -11,6 +11,8 @@ import PlayerHealthBarData from "./assets/pantheon-game-health-bar.json";
 import SkeletonImage from "./assets/pantheon-game-skeleton.png";
 import SkeletonData from "./assets/pantheon-game-skeleton.json";
 import Skeleton from "./pantheonSkeleton";
+import ArrowSound from "./assets/pantheon-arrow-shoot.wav";
+import HitSound from "./assets/pantheon-hit.wav";
 
 export default class PantheonGameScene extends Phaser.Scene {
   constructor() {
@@ -38,6 +40,8 @@ export default class PantheonGameScene extends Phaser.Scene {
     );
     this.load.image("projectileArrow", ProjectileArrowImage);
     this.load.bitmapFont("PressStart2p", PressStart2pImg, PressStart2pXml);
+    this.load.audio("arrowShoot", ArrowSound);
+    this.load.audio("hit", HitSound);
   }
 
   create() {
@@ -82,7 +86,7 @@ export default class PantheonGameScene extends Phaser.Scene {
 
     this.physics.add.collider(this.player, this.platformLayer);
     this.physics.add.collider(this.skeleton, this.platformLayer);
-    this.physics.add.overlap(this.projectileArrows, this.skeleton, this.onArrowOverlap);
+    this.physics.add.overlap(this.projectileArrows, this.skeleton, this.onArrowOverlap, null, this);
   }
 
   update(time, delta) {
@@ -177,6 +181,7 @@ export default class PantheonGameScene extends Phaser.Scene {
         arrow.body.setVelocityX(velocity);
         arrow.body.setVelocityY(0);
         arrow.body.enable = true;
+        this.sound.play("arrowShoot");
       }
     } else if (this.player.anims.currentAnim.key == "arrow-fire-up") {
       var arrow = this.projectileArrows.get(this.player.x, this.player.y + -2);
@@ -190,6 +195,7 @@ export default class PantheonGameScene extends Phaser.Scene {
         arrow.body.setVelocityY(velocity * -1);
         arrow.body.setVelocityX(0);
         arrow.body.enable = true;
+        this.sound.play("arrowShoot");
       }
     }
   }
