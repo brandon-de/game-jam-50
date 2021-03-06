@@ -1,6 +1,8 @@
 import Phaser from "phaser";
 import LevelData from "./assets/gamejam50-pantheon-level1.json";
 import TileSetImage from "./assets/gamejam50-pantheon-tileset.png";
+import LevelData2 from "./assets/pantheon-level1.json";
+import TileSetImage2 from "./assets/pantheon-tileset.png";
 import PlayerImage from "./assets/gamejam50-pantheon-player.png";
 import PlayerData from "./assets/gamejam50-pantheon-player.json";
 import ProjectileArrowImage from "./assets/gamejam50-pantheon-projectile-arrow.png";
@@ -13,6 +15,10 @@ import SkeletonData from "./assets/pantheon-game-skeleton.json";
 import Skeleton from "./pantheonSkeleton";
 import ArrowSound from "./assets/pantheon-arrow-shoot.wav";
 import HitSound from "./assets/pantheon-hit.wav";
+import ExplodeImage from "./assets/pantheon-explosion.png";
+import ExplodeData from "./assets/pantheon-explosion.json";
+import Explosion from "./pantheonExplosion";
+import ExplodeSound from "./assets/pantheon-explosion.wav";
 
 export default class PantheonGameScene extends Phaser.Scene {
   constructor() {
@@ -29,40 +35,45 @@ export default class PantheonGameScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("tiles", TileSetImage);
-    this.load.tilemapTiledJSON("map", LevelData);
+    this.load.image("tiles", TileSetImage2);
+    this.load.tilemapTiledJSON("map", LevelData2);
     this.load.aseprite("player", PlayerImage, PlayerData);
     this.load.aseprite("skeleton", SkeletonImage, SkeletonData);
-    this.load.aseprite(
-      "playerHealthBar",
-      PlayerHealthBarImage,
-      PlayerHealthBarData
-    );
+    this.load.aseprite("explode", ExplodeImage, ExplodeData);
+    this.load.aseprite("playerHealthBar", PlayerHealthBarImage, PlayerHealthBarData);
     this.load.image("projectileArrow", ProjectileArrowImage);
     this.load.bitmapFont("PressStart2p", PressStart2pImg, PressStart2pXml);
     this.load.audio("arrowShoot", ArrowSound);
     this.load.audio("hit", HitSound);
+    this.load.audio("boom", ExplodeSound);
   }
 
   create() {
+
+    var camera = this.cameras.main;
+    camera.centerOn(160, 120); 
+
     var map = this.make.tilemap({ key: "map" });
-    var tileset = map.addTilesetImage("gamejam50-pantheon-tileset", "tiles");
+    //var tileset = map.addTilesetImage("gamejam50-pantheon-tileset", "tiles");
+    var tileset = map.addTilesetImage("pantheon-tileset", "tiles");
     this.platformLayer = map.createLayer("platforms", tileset, 0, 0);
+    this.backgroundLayer = map.createLayer("background", tileset, 0, 0);
 
     this.anims.createFromAseprite("player");
     this.anims.createFromAseprite("skeleton");
+    this.anims.createFromAseprite("explode");
     this.player = this.add.sprite(128, 100, "player");
     this.cursors = this.input.keyboard.createCursorKeys();
     this.zkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
     this.xkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);    
     this.score = { number: 0 };
-    this.score.textStatic = this.add.bitmapText(2, 12, "PressStart2p", "SCORE", 8);
-    this.score.textDynamic = this.add.bitmapText(44, 12, "PressStart2p", this.score.number.toString(), 8);
+    this.score.textStatic = this.add.bitmapText(34, 12, "PressStart2p", "SCORE", 8);
+    this.score.textDynamic = this.add.bitmapText(76, 12, "PressStart2p", this.score.number.toString(), 8);
     this.playerHealth = { current: 4, max: 4, bars: [] };
     for (var index = 0; index < this.playerHealth.max; index++) {
-      this.playerHealth.bars.push(this.add.sprite(54 + (index * 5), 5, "playerHealthBar"));
+      this.playerHealth.bars.push(this.add.sprite(86 + (index * 5), 5, "playerHealthBar"));
     }
-    this.playerHealth.text = this.add.bitmapText(2, 2, "PressStart2p", "PLAYER", 8);
+    this.playerHealth.text = this.add.bitmapText(34, 2, "PressStart2p", "PLAYER", 8);
 
 
     this.platformLayer.setCollision([1]);
@@ -71,6 +82,15 @@ export default class PantheonGameScene extends Phaser.Scene {
     this.projectileArrows = this.physics.add.group({
       defaultKey: "projectileArrow",
       frameQuantity: 20,
+      allowGravity: false,
+      runChildUpdate: true,
+      active: false,
+      visible: false
+    });
+
+    this.explosions = this.physics.add.group({
+      classType: Explosion,
+      frameQuantity: 5,
       allowGravity: false,
       runChildUpdate: true,
       active: false,
@@ -143,6 +163,12 @@ export default class PantheonGameScene extends Phaser.Scene {
         }
       }.bind(this)
     );
+
+    /**this.explosions.children.each(
+      function (explosion) {
+        explosion.update(time, delta);
+      }.bind(this)
+    );**/
 
     this.skeleton.update(time, delta);
   }

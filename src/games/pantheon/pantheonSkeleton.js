@@ -4,6 +4,7 @@ export default class Skeleton extends Phaser.GameObjects.Sprite {
         this.scene.physics.world.enable(this);
         this.scene.add.existing(this);
         this.state = 'WALK';
+        this.health = 4;
     }
 
     update(time, delta){
@@ -11,10 +12,13 @@ export default class Skeleton extends Phaser.GameObjects.Sprite {
             return;
         }
 
-        if(this.state == 'HIT'){
+        if(this.health == 0){
+            this.scene.explosions.getFirstDead(true, this.x - 2, this.y + 3);
+            this.destroy();
+        }
+        else if(this.state == 'HIT'){
             this.anims.play('skeleton-hit', true);            
-            if(!this.hitTimer){
-                this.scene.sound.play("hit");
+            if(!this.hitTimer){                
                 this.hitTimer = this.scene.time.addEvent({
                     delay: 400,
                     callback: this.endHit,
@@ -40,11 +44,13 @@ export default class Skeleton extends Phaser.GameObjects.Sprite {
 
     hit(){
         this.state = 'HIT';
+        this.scene.sound.play("hit");
+        this.health--;
     }
 
     endHit(){
         this.state = 'WALK';
         this.clearTint();
-        this.hitTimer = undefined;        
+        this.hitTimer = undefined;          
     }
 }
