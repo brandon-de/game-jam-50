@@ -33,7 +33,7 @@ export default class GameSelectScene extends Phaser.Scene {
       {},
       {},
       {
-        text: "PANTHEON",
+        text: "  DEMO",
         image: "pantheonGameFrame",
         sceneName: "PantheonTitleScene",
       },

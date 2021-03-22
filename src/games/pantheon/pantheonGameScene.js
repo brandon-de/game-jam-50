@@ -1,6 +1,4 @@
 import Phaser from "phaser";
-import LevelData from "./assets/gamejam50-pantheon-level1.json";
-import TileSetImage from "./assets/gamejam50-pantheon-tileset.png";
 import LevelData2 from "./assets/pantheon-level1.json";
 import TileSetImage2 from "./assets/pantheon-tileset.png";
 import PlayerImage from "./assets/gamejam50-pantheon-player.png";
@@ -19,6 +17,15 @@ import ExplodeImage from "./assets/pantheon-explosion.png";
 import ExplodeData from "./assets/pantheon-explosion.json";
 import Explosion from "./pantheonExplosion";
 import ExplodeSound from "./assets/pantheon-explosion.wav";
+import Spawner from "./Spawner";
+import BoneImage from "./assets/pantheon-bone.png";
+import BoneData from "./assets/pantheon-bone.json";
+import Bone from "./pantheonBone";
+import SmallExplodeSound from "./assets/pantheon-small-explosion.wav";
+import SmallExplodeImage from "./assets/pantheon-small-explosion.png";
+import SmallExplodeData from "./assets/pantheon-small-explosion.json";
+import SmallExplosion from "./pantheonSmallExplosion";
+import PlayerHitSound from "./assets/pantheon-player-hit.wav";
 
 export default class PantheonGameScene extends Phaser.Scene {
   constructor() {
@@ -37,55 +44,82 @@ export default class PantheonGameScene extends Phaser.Scene {
   preload() {
     this.load.image("tiles", TileSetImage2);
     this.load.tilemapTiledJSON("map", LevelData2);
+    this.load.aseprite("bone", BoneImage, BoneData);
     this.load.aseprite("player", PlayerImage, PlayerData);
     this.load.aseprite("skeleton", SkeletonImage, SkeletonData);
     this.load.aseprite("explode", ExplodeImage, ExplodeData);
-    this.load.aseprite("playerHealthBar", PlayerHealthBarImage, PlayerHealthBarData);
+    this.load.aseprite(
+      "playerHealthBar",
+      PlayerHealthBarImage,
+      PlayerHealthBarData
+    );
+    this.load.aseprite("smallExplode", SmallExplodeImage, SmallExplodeData);
     this.load.image("projectileArrow", ProjectileArrowImage);
     this.load.bitmapFont("PressStart2p", PressStart2pImg, PressStart2pXml);
     this.load.audio("arrowShoot", ArrowSound);
     this.load.audio("hit", HitSound);
     this.load.audio("boom", ExplodeSound);
+    this.load.audio("smallBoom", SmallExplodeSound);
+    this.load.audio("playerHit", PlayerHitSound);
   }
 
   create() {
-
     var camera = this.cameras.main;
-    camera.centerOn(160, 120); 
+    camera.centerOn(160, 120);
 
     var map = this.make.tilemap({ key: "map" });
-    //var tileset = map.addTilesetImage("gamejam50-pantheon-tileset", "tiles");
     var tileset = map.addTilesetImage("pantheon-tileset", "tiles");
     this.platformLayer = map.createLayer("platforms", tileset, 0, 0);
     this.backgroundLayer = map.createLayer("background", tileset, 0, 0);
-
     this.anims.createFromAseprite("player");
     this.anims.createFromAseprite("skeleton");
     this.anims.createFromAseprite("explode");
-    this.player = this.add.sprite(128, 100, "player");
+    this.anims.createFromAseprite("bone");
+    this.anims.createFromAseprite("smallExplode");
+    this.player = this.add.sprite(160, 120, "player");
+    this.player.facingRight = true;
     this.cursors = this.input.keyboard.createCursorKeys();
     this.zkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
-    this.xkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);    
+    this.xkey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);
     this.score = { number: 0 };
-    this.score.textStatic = this.add.bitmapText(34, 12, "PressStart2p", "SCORE", 8);
-    this.score.textDynamic = this.add.bitmapText(76, 12, "PressStart2p", this.score.number.toString(), 8);
+    this.score.textStatic = this.add.bitmapText(
+      34,
+      12,
+      "PressStart2p",
+      "SCORE",
+      8
+    );
+    this.score.textDynamic = this.add.bitmapText(
+      76,
+      12,
+      "PressStart2p",
+      this.score.number.toString(),
+      8
+    );
     this.playerHealth = { current: 4, max: 4, bars: [] };
     for (var index = 0; index < this.playerHealth.max; index++) {
-      this.playerHealth.bars.push(this.add.sprite(86 + (index * 5), 5, "playerHealthBar"));
+      this.playerHealth.bars.push(
+        this.add.sprite(86 + index * 5, 5, "playerHealthBar")
+      );
     }
-    this.playerHealth.text = this.add.bitmapText(34, 2, "PressStart2p", "PLAYER", 8);
-
+    this.playerHealth.text = this.add.bitmapText(
+      34,
+      2,
+      "PressStart2p",
+      "PLAYER",
+      8
+    );
 
     this.platformLayer.setCollision([1]);
-    this.physics.add.existing(this.player);    
+    this.physics.add.existing(this.player);
 
     this.projectileArrows = this.physics.add.group({
       defaultKey: "projectileArrow",
-      frameQuantity: 20,
+      frameQuantity: 10,
       allowGravity: false,
       runChildUpdate: true,
       active: false,
-      visible: false
+      visible: false,
     });
 
     this.explosions = this.physics.add.group({
@@ -94,7 +128,34 @@ export default class PantheonGameScene extends Phaser.Scene {
       allowGravity: false,
       runChildUpdate: true,
       active: false,
-      visible: false
+      visible: false,
+    });
+
+    this.skeletons = this.physics.add.group({
+      classType: Skeleton,
+      frameQuantity: 10,
+      allowGravity: true,
+      runChildUpdate: true,
+      active: true,
+      visible: true,
+    });
+
+    this.bones = this.physics.add.group({
+      classType: Bone,
+      frameQuantity: 20,
+      allowGravity: false,
+      runChildUpdate: true,
+      active: true,
+      visible: true,
+    });
+
+    this.smallExplosions = this.physics.add.group({
+      classType: SmallExplosion,
+      frameQuantity: 20,
+      allowGravity: false,
+      runChildUpdate: true,
+      active: true,
+      visible: true,
     });
 
     this.player.on(
@@ -102,11 +163,36 @@ export default class PantheonGameScene extends Phaser.Scene {
       this.onPlayerAnimComplete.bind(this)
     );
 
-    this.skeleton = new Skeleton(this, 0, 150);
-
     this.physics.add.collider(this.player, this.platformLayer);
-    this.physics.add.collider(this.skeleton, this.platformLayer);
-    this.physics.add.overlap(this.projectileArrows, this.skeleton, this.onArrowOverlap, null, this);
+    this.physics.add.collider(this.skeletons, this.platformLayer);
+    this.physics.add.collider(
+      this.bones,
+      this.platformLayer,
+      this.onBoneOverlap,
+      null,
+      this
+    );
+    this.physics.add.overlap(
+      this.projectileArrows,
+      this.skeletons,
+      this.onArrowOverlap,
+      null,
+      this
+    );
+    this.physics.add.overlap(
+      this.bones,
+      this.player,
+      this.onPlayerBonesOverlap,
+      null,
+      this
+    );
+
+    this.time.addEvent({
+      delay: 3000,
+      callback: this.spawnSkeletons,
+      callbackScope: this,
+      repeat: 0,
+    });
   }
 
   update(time, delta) {
@@ -120,15 +206,19 @@ export default class PantheonGameScene extends Phaser.Scene {
         this.player.play("arrow-fire-stand", true);
 
         if (this.cursors.left.isDown && !this.player.flipX) {
+          this.player.facingRight = false;
           this.player.flipX = true;
         } else if (this.cursors.right.isDown && this.player.flipX) {
+          this.player.facingRight = true;
           this.player.flipX = false;
         }
       }
     } else if (this.cursors.down.isDown) {
       if (this.cursors.left.isDown) {
+        this.player.facingRight = false;
         this.player.flipX = true;
       } else if (this.cursors.right.isDown) {
+        this.player.facingRight = true;
         this.player.flipX = false;
       }
 
@@ -140,16 +230,29 @@ export default class PantheonGameScene extends Phaser.Scene {
 
       this.player.body.setVelocityX(0);
     } else if (this.cursors.right.isDown) {
+      this.player.facingRight = true;
       this.player.flipX = false;
       this.player.anims.play("walk", true);
       this.player.body.setVelocityX(40);
     } else if (this.cursors.left.isDown) {
+      this.player.facingRight = false;
       this.player.flipX = true;
       this.player.anims.play("walk", true);
       this.player.body.setVelocityX(-40);
     } else {
       this.player.body.setVelocityX(0);
       this.player.anims.play("idle", true);
+    }
+
+    if(this.player.state == "HIT"){
+      if (!this.player.flashTimer) {
+        this.player.flashTimer = this.time.addEvent({
+          delay: 75,
+          callback: this.playerFlash,
+          callbackScope: this,
+          loop: true,
+        });
+      }
     }
 
     this.projectileArrows.children.each(
@@ -164,13 +267,17 @@ export default class PantheonGameScene extends Phaser.Scene {
       }.bind(this)
     );
 
-    /**this.explosions.children.each(
-      function (explosion) {
-        explosion.update(time, delta);
+    this.skeletons.children.each(
+      function (skeleton) {
+        skeleton.update(time, delta);
       }.bind(this)
-    );**/
+    );
 
-    this.skeleton.update(time, delta);
+    this.bones.children.each(
+      function (bone) {
+        bone.update(time, delta);
+      }.bind(this)
+    );
   }
 
   onPlayerAnimComplete() {
@@ -178,7 +285,8 @@ export default class PantheonGameScene extends Phaser.Scene {
 
     if (
       (this.player.anims.currentAnim.key == "arrow-fire-crouch" ||
-      this.player.anims.currentAnim.key == "arrow-fire-stand") && this.zkey.isDown
+        this.player.anims.currentAnim.key == "arrow-fire-stand") &&
+      this.zkey.isDown
     ) {
       var xPosBuffer = 3;
       var yPosBuffer = 6;
@@ -192,7 +300,8 @@ export default class PantheonGameScene extends Phaser.Scene {
         yPosBuffer = -1;
       }
 
-      var arrow = this.projectileArrows.getFirstDead(true,
+      var arrow = this.projectileArrows.getFirstDead(
+        true,
         this.player.x + xPosBuffer,
         this.player.y + yPosBuffer
       );
@@ -226,10 +335,65 @@ export default class PantheonGameScene extends Phaser.Scene {
     }
   }
 
-  onArrowOverlap(enemy, arrow){
+  onArrowOverlap(arrow, enemy) {
     arrow.setActive(false);
     arrow.setVisible(false);
     arrow.body.enable = false;
     enemy.hit();
+  }
+
+  onBoneOverlap(bone, platform) {
+    bone.hit();
+  }
+
+  onPlayerBonesOverlap(player, bone) {
+    bone.hit();
+    this.playerHit();
+  }
+
+  spawnSkeletons() {
+    this.skeletons.getFirstDead(true, 0, 150);
+  }
+
+  playerHit() {
+    if (this.playerHealth.current > 0 && this.player.state != "HIT") {
+      this.player.state = "HIT";
+      this.sound.play("playerHit");
+      this.playerHealth.current -= 1;
+
+      for (
+        var index = this.playerHealth.bars.length - 1;
+        index > this.playerHealth.current - 1;
+        index--
+      ) {
+        var bar = this.playerHealth.bars[index];
+        bar.setFrame("1");
+      }
+
+      if(!this.player.hitTimer){
+        this.player.hitTimer = this.time.addEvent({
+          delay: 1500,
+          callback: this.playerEndHit,
+          callbackScope: this,
+          repeat: 0,
+        });
+      }
+    }
+  }
+
+  playerEndHit() {
+    this.player.state = "NONE";
+    this.player.flashTimer.paused = true;
+    this.player.flashTimer = undefined;
+    this.player.hitTimer = undefined;
+    this.player.clearTint();
+  }
+
+  playerFlash() {
+    if (this.player.isTinted) {
+      this.player.clearTint();
+    } else {
+      this.player.setTint(0x000000);
+    }
   }
 }
