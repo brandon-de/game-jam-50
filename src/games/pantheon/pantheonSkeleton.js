@@ -26,9 +26,7 @@ export default class Skeleton extends Phaser.GameObjects.Sprite {
     if (
       this.state != "ATTACK" &&
       this.attackTimer == undefined &&
-      Math.abs(this.CurrentXDistanceFromPlayer) < this.attackPlayerRangeX //&&
-      //((this.CurrentXDistanceFromPlayer < 0 && this.facingRight) ||
-      //(this.CurrentXDistanceFromPlayer > 0 && !this.facingRight))
+      Math.abs(this.CurrentXDistanceFromPlayer) < this.attackPlayerRangeX
     ) {
       this.attackTimer = this.scene.time.addEvent({
         delay: Math.floor(Math.random() * 2000) + 500,
@@ -51,7 +49,11 @@ export default class Skeleton extends Phaser.GameObjects.Sprite {
 
     if (this.health == 0) {
       this.scene.explosions.getFirstDead(true, this.x - 2, this.y + 3);
-      this.attackTimer.paused = true;
+
+      if(this.attackTimer){
+        this.attackTimer.paused = true;
+      }
+
       this.destroy();
     } else if (this.state == "HIT") {
       this.anims.play("skeleton-hit", true);

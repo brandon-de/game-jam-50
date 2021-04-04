@@ -33,12 +33,20 @@ export default class GameSelectScene extends Phaser.Scene {
       {},
       {},
       {
-        text: "  DEMO",
+        text: " DEMO1",
         image: "pantheonGameFrame",
         sceneName: "PantheonTitleScene",
+        link: undefined,
+        openType: "PHASER",
       },
       {},
-      {},
+      {
+        text: " DEMO2",
+        image: "dinoRunGameFrame",
+        link: "http://dinogarber.azurewebsites.net/",
+        openType: "LINK",
+        sceneName: undefined,
+      },
       {},
       {},
       {},
@@ -66,8 +74,9 @@ export default class GameSelectScene extends Phaser.Scene {
       var gameFrame = this.add
         .sprite(currentX, currentY, "gameFrame")
         .setInteractive();
-      gameFrame.sceneName =
-        this.games[i].sceneName == undefined ? null : this.games[i].sceneName;
+      gameFrame.sceneName = this.games[i].sceneName;
+      gameFrame.link = this.games[i].link;
+      gameFrame.openType = this.games[i].openType;
 
       if (this.games[i].text != undefined) {
         this.add.bitmapText(
@@ -141,7 +150,10 @@ export default class GameSelectScene extends Phaser.Scene {
   }
 
   onGameFrameClick(gameFrame, gameSelectSound, menuNegativeSound, pointer) {
-    if (gameFrame.sceneName == undefined) {
+    if (
+      (gameFrame.openType == "PHASER" && gameFrame.sceneName == undefined) ||
+      (gameFrame.openType == "LINK" && gameFrame.link == undefined)
+    ) {
       menuNegativeSound.play();
     } else {
       gameSelectSound.play();
@@ -150,6 +162,10 @@ export default class GameSelectScene extends Phaser.Scene {
   }
 
   onGameFrameAnimComplete(gameFrame) {
-    this.scene.start(gameFrame.sceneName);
+    if (gameFrame.openType == "LINK") {
+      window.open(gameFrame.link);
+    } else {
+      this.scene.start(gameFrame.sceneName);
+    }
   }
 }

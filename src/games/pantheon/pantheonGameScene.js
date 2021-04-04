@@ -187,11 +187,12 @@ export default class PantheonGameScene extends Phaser.Scene {
       this
     );
 
+    this.spawnOppositeSide = false;
     this.time.addEvent({
-      delay: 3000,
+      delay: Math.floor(Math.random() * 2500) + 500,
       callback: this.spawnSkeletons,
       callbackScope: this,
-      repeat: 0,
+      repeat: 8,
     });
   }
 
@@ -259,7 +260,7 @@ export default class PantheonGameScene extends Phaser.Scene {
       function (arrow) {
         if (
           (Math.abs(arrow.startX - arrow.x) ||
-            Math.abs(arrow.startY - arrow.y)) > 55
+            Math.abs(arrow.startY - arrow.y)) > 65
         ) {
           this.projectileArrows.killAndHide(arrow);
           arrow.body.enable = false;
@@ -351,8 +352,10 @@ export default class PantheonGameScene extends Phaser.Scene {
     this.playerHit();
   }
 
-  spawnSkeletons() {
-    this.skeletons.getFirstDead(true, 0, 150);
+  spawnSkeletons() {    
+    var xpos = this.spawnOppositeSide ? 300 : 0;
+    this.skeletons.getFirstDead(true, xpos, 150);
+    this.spawnOppositeSide = !this.spawnOppositeSide;
   }
 
   playerHit() {
