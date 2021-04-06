@@ -123,7 +123,7 @@ export default class TitleScene extends Phaser.Scene {
     if (this.transitionTimer.getRepeatCount() == 0) {
       if (this.titlePointer.selectedOption == "REGISTER") {
         this.isTriggerSceneTransition = false;
-        window.open("https://itch.io/jams");
+        window.open("https://itch.io/jam/gamejam-50");
       } else {
         this.scene.start("GameSelectScene");
       }

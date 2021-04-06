@@ -152,7 +152,8 @@ export default class GameSelectScene extends Phaser.Scene {
   onGameFrameClick(gameFrame, gameSelectSound, menuNegativeSound, pointer) {
     if (
       (gameFrame.openType == "PHASER" && gameFrame.sceneName == undefined) ||
-      (gameFrame.openType == "LINK" && gameFrame.link == undefined)
+      (gameFrame.openType == "LINK" && gameFrame.link == undefined) ||
+      gameFrame.openType == undefined
     ) {
       menuNegativeSound.play();
     } else {
