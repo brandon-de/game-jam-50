@@ -12,6 +12,8 @@ export default class Skeleton extends Phaser.GameObjects.Sprite {
       Phaser.Animations.Events.ANIMATION_COMPLETE,
       this.onAnimComplete.bind(this)
     );
+
+    this.body.setSize(12, 24).setOffset(1, 8);
   }
 
   update(time, delta) {
@@ -37,7 +39,8 @@ export default class Skeleton extends Phaser.GameObjects.Sprite {
     } else if (
       this.state == "ATTACK" &&
       this.attackResetTimer == undefined &&
-      (this.scene.player.x > this.currentAttackAtX + 10 || this.scene.player.x < this.currentAttackAtX - 10)
+      (this.scene.player.x > this.currentAttackAtX + 10 ||
+        this.scene.player.x < this.currentAttackAtX - 10)
     ) {
       this.attackResetTimer = this.scene.time.addEvent({
         delay: 2000,
@@ -50,7 +53,7 @@ export default class Skeleton extends Phaser.GameObjects.Sprite {
     if (this.health == 0) {
       this.scene.explosions.getFirstDead(true, this.x - 2, this.y + 3);
 
-      if(this.attackTimer){
+      if (this.attackTimer) {
         this.attackTimer.paused = true;
       }
 

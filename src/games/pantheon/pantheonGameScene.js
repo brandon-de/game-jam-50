@@ -34,7 +34,7 @@ export default class PantheonGameScene extends Phaser.Scene {
       physics: {
         default: "arcade",
         arcade: {
-          debug: false,
+          debug: true,
           gravity: { y: 200 },
         },
       },
@@ -245,7 +245,7 @@ export default class PantheonGameScene extends Phaser.Scene {
       this.player.anims.play("idle", true);
     }
 
-    if(this.player.state == "HIT"){
+    if (this.player.state == "HIT") {
       if (!this.player.flashTimer) {
         this.player.flashTimer = this.time.addEvent({
           delay: 75,
@@ -352,7 +352,7 @@ export default class PantheonGameScene extends Phaser.Scene {
     this.playerHit();
   }
 
-  spawnSkeletons() {    
+  spawnSkeletons() {
     var xpos = this.spawnOppositeSide ? 300 : 0;
     this.skeletons.getFirstDead(true, xpos, 150);
     this.spawnOppositeSide = !this.spawnOppositeSide;
@@ -373,7 +373,7 @@ export default class PantheonGameScene extends Phaser.Scene {
         bar.setFrame("1");
       }
 
-      if(!this.player.hitTimer){
+      if (!this.player.hitTimer) {
         this.player.hitTimer = this.time.addEvent({
           delay: 1500,
           callback: this.playerEndHit,
